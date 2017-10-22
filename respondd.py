@@ -73,7 +73,15 @@ if __name__ == "__main__":
     parser.add_argument('-b', dest='batadv_iface',
                         default='bat0', metavar='<iface>',
                         help='batman-adv interface (default: bat0)')
+    parser.add_argument('-s', dest='site_code',
+                        required=True, metavar='<site_code>',
+                        help='value to advertise as system.site_code')
     args = parser.parse_args()
+
+    env = {
+        'batadv_dev': args.batadv_iface,
+        'site_code': args.site_code
+    }
 
     socketserver.ThreadingUDPServer.address_family = socket.AF_INET6
     for iface in args.mcast_ifaces:
@@ -83,7 +91,7 @@ if __name__ == "__main__":
         )
         mcast_server = socketserver.ThreadingUDPServer(
             (args.group, args.port, 0, socket.if_nametoindex(iface)),
-            get_handler(args.directory, {'batadv_dev': args.batadv_iface})
+            get_handler(args.directory, env)
         )
 
         group_bin = socket.inet_pton(socket.AF_INET6, args.group)
@@ -112,6 +120,6 @@ if __name__ == "__main__":
             )
             ucast_server = socketserver.ThreadingUDPServer(
                 (lladdr, args.port, 0, socket.if_nametoindex(iface)),
-                get_handler(args.directory, {'batadv_dev': args.batadv_iface})
+                get_handler(args.directory, env)
             )
             threading.Thread(target=ucast_server.serve_forever).start()
