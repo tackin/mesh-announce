@@ -109,7 +109,7 @@ if __name__ == "__main__":
     parser.add_argument('-i', dest='mcast_ifaces',
                         action='append', metavar='<iface>',
                         help='interface on which the group is joined')
-    parser.add_argument('-d', dest='directory',
+    parser.add_argument('--data-provider-directory', dest='directory',
                         default='.', metavar='<dir>',
                         help='data provider directory (default: $PWD)')
     parser.add_argument('-b', dest='batadv_iface',
@@ -118,6 +118,9 @@ if __name__ == "__main__":
     parser.add_argument('-s', dest='site_code',
                         required=True, metavar='<site_code>',
                         help='value to advertise as system.site_code')
+    parser.add_argument('-d', dest='domain_code',
+                        metavar='<domain_code>',
+                        help='value to advertise as system.domain_code')
     args = parser.parse_args()
 
     socketserver.ThreadingUDPServer.address_family = socket.AF_INET6
@@ -126,6 +129,9 @@ if __name__ == "__main__":
         'batadv_dev': args.batadv_iface,
         'site_code': args.site_code
     }
+
+    if args.domain_code:
+        env['domain_code'] = args.domain_code
 
     if_threads = {}
     for iface in args.mcast_ifaces:
