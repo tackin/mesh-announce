@@ -8,7 +8,7 @@
     import_module('glob').glob('/sys/class/net/{}/lower_*'.format(batadv_dev))
 })([
     (line[0], float(line[1].strip('s')), int(line[2].strip(')')), line[4].strip('[]:'))
-    for line in map(lambda l: l.replace('* ','').replace('(', '').replace('[', '').split(),
+    for line in map(lambda l: l[3:].replace('(', '').replace('[', '').split(),
         call(['batctl', '-m', batadv_dev, 'originators', '-H', '-n']))
     if line[0] == line[3]
 ])
